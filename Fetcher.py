@@ -4,9 +4,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from io import BytesIO
-import plotly.graph_objects as go
 import yfinance as yf
-import plotly as pl
 
 class NSE():
     def __init__(self, timeout=10):
@@ -98,56 +96,6 @@ def to_excel(df):
     processed_data = output.getvalue()
     return processed_data
 
-def calculate_mae(df, span):
-    return df.ewm(span=span, adjust=False).mean()
-
-def generate_signals(df, short_window, long_window):
-    df['MAE_short'] = calculate_mae(df['close'], short_window)
-    df['MAE_long'] = calculate_mae(df['close'], long_window)
-    
-    # Ensure that the length matches before assignment
-    signals = np.where(df['MAE_short'] > df['MAE_long'], 1, -1)
-    
-    df['signal'] = 0
-    df.loc[df.index[short_window:], 'signal'] = signals[:len(df) - short_window]
-    
-    df['position'] = df['signal'].diff()
-    
-    # Add buy and sell signals
-    df['buy_signal'] = np.where(df['position'] == 1, df['close'], np.nan)
-    df['sell_signal'] = np.where(df['position'] == -1, df['close'], np.nan)
-    
-    return df
-
-def plot_candlestick(df):
-    fig = go.Figure(data=[go.Candlestick(
-        x=df['timestamp'],
-        open=df['open'],
-        high=df['high'],
-        low=df['low'],
-        close=df['close'],
-        name='Candlesticks'
-    )])
-
-    fig.add_trace(go.Scatter(
-        x=df['timestamp'],
-        y=df['buy_signal'],
-        mode='markers',
-        marker=dict(symbol='triangle-up', color='green', size=12),
-        name='Buy Signal'
-    ))
-
-    fig.add_trace(go.Scatter(
-        x=df['timestamp'],
-        y=df['sell_signal'],
-        mode='markers',
-        marker=dict(symbol='triangle-down', color='red', size=12),
-        name='Sell Signal'
-    ))
-    
-    fig.update_layout(title='Candlestick chart with Buy and Sell Signals', xaxis_title='Date', yaxis_title='Price')
-    return fig
-
 def main():
     st.title("NSE Historical Data Fetcher")
 
@@ -205,8 +153,7 @@ def main():
         for symbol in symbols_list:
             df = nse.getHistoricalData(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'), interval_mapping[interval])
             if not df.empty:
-                df = generate_signals(df, short_window, long_window)
-            all_data = pd.concat([all_data, df], ignore_index=True)
+                all_data = pd.concat([all_data, df], ignore_index=True)
 
         if not all_data.empty:
             st.dataframe(all_data)
@@ -218,10 +165,6 @@ def main():
                 file_name='nse_historical_data.xlsx',
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
-            
-            # Plot candlestick chart
-            fig = plot_candlestick(all_data)
-            st.plotly_chart(fig)
         else:
             st.warning("No data found.")
 
@@ -241,7 +184,7 @@ def main():
             st.subheader("Candlestick Chart")
             candlestick_data = data[['Open', 'High', 'Low', 'Close']]
             st.write(candlestick_data)
-            st.write('<iframe src="https://s.tradingview.com/embed-widget/candlestick/?locale=en#%7B%22symbol%22%3A%22'+symbol+'%22%2C%22width%22%3A%22800%22%2C%22height%22%3A%22320%22%2C%22interval%22%3A%22'+period+'%22%2C%22timezone%22%3A%22Etc%2FUTC%22%2C%22theme%22%3A%22light%22%2C%22style%22%3A%221%22%2C%22toolbar_bg%22%3A%22%23f1f3f6%22%2C%22enable_publishing%22%3Afalse%2C%22hide_top_toolbar%22%3Atrue%2C%22hide_legend%22%3Atrue%2C%22withdateranges%22%3Atrue%2C%22hideideas%22%3Atrue%7D" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
+            # st.write('<iframe src="https://s.tradingview.com/embed-widget/candlestick/?locale=en#%7B%22symbol%22%3A%22'+symbol+'%22%2C%22width%22%3A%22800%22%2C%22height%22%3A%22320%22%2C%22interval%22%3A%22'+period+'%22%2C%22timezone%22%3A%22Etc%2FUTC%22%2C%22theme%22%3A%22light%22%2C%22style%22%3A%221%22%2C%22toolbar_bg%22%3A%22%23f1f3f6%22%2C%22enable_publishing%22%3Afalse%2C%22hide_top_toolbar%22%3Atrue%2C%22hide_legend%22%3Atrue%2C%22withdateranges%22%3Atrue%2C%22hideideas%22%3Atrue%7D" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()
