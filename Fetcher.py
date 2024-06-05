@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from io import BytesIO
-import yfinance as yf
 
 class NSE():
     def __init__(self, timeout=10):
@@ -167,24 +166,6 @@ def main():
             )
         else:
             st.warning("No data found.")
-
-    st.title("Stock Price Chart")
-
-    symbol = st.text_input("Enter Stock Symbol", value="INFY")
-    period = st.selectbox("Select Period", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"])
-
-    if symbol:
-        # Fetch data from Yahoo Finance
-        data = yf.download(symbol, period=period)
-
-        if not data.empty:
-            st.subheader(f"{symbol} Stock Price Chart")
-            st.line_chart(data["Close"])
-
-            st.subheader("Candlestick Chart")
-            candlestick_data = data[['Open', 'High', 'Low', 'Close']]
-            st.write(candlestick_data)
-            # st.write('<iframe src="https://s.tradingview.com/embed-widget/candlestick/?locale=en#%7B%22symbol%22%3A%22'+symbol+'%22%2C%22width%22%3A%22800%22%2C%22height%22%3A%22320%22%2C%22interval%22%3A%22'+period+'%22%2C%22timezone%22%3A%22Etc%2FUTC%22%2C%22theme%22%3A%22light%22%2C%22style%22%3A%221%22%2C%22toolbar_bg%22%3A%22%23f1f3f6%22%2C%22enable_publishing%22%3Afalse%2C%22hide_top_toolbar%22%3Atrue%2C%22hide_legend%22%3Atrue%2C%22withdateranges%22%3Atrue%2C%22hideideas%22%3Atrue%7D" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()
