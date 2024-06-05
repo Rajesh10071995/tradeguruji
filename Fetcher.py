@@ -115,7 +115,7 @@ def main():
 
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx", "xls"])
     if uploaded_file is not None:
-        symbols_df = pd.read_excel(uploaded_file)
+        symbols_df = st.pandas_read_excel(uploaded_file)
         # Check if 'Symbol' column exists in the DataFrame
         if 'Symbol' in symbols_df.columns:
             symbols_list = symbols_df['Symbol'].tolist()
