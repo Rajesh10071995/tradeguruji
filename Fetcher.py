@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import plotly.graph_objects as go
 import yfinance as yf
+import plotly as pl
 
 class NSE():
     def __init__(self, timeout=10):
