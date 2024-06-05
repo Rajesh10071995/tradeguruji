@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import pandas as pd
 import numpy as np
-import xlsxwriter as writer
 from datetime import datetime, timedelta
 from io import BytesIO
 
