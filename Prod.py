@@ -32,9 +32,9 @@ if 'authenticated' not in st.session_state:
 
 # Dictionary for multiple username and password pairs
 user_credentials = {
-    "admin": "password",
-    "user1": "password1",
-    "user2": "password2"
+    "admin": "654987",
+    "raja": "858585",
+    "ezar": "654321"
 }
 
 # Sign-in form
