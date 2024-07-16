@@ -59,7 +59,7 @@ if st.session_state.authenticated:
     # Sidebar for user input
     tickers = st.sidebar.text_input("Enter the ticker symbols separated by commas", "RELIANCE.NS, TCS.NS, INFY.NS")
     start_date = st.sidebar.date_input("Start date", pd.to_datetime("2024-06-01"))
-    end_date = st.sidebar.date_input("End date", pd.to_datetime("2024-06-14"))
+    end_date = st.sidebar.date_input("End date", pd.to_datetime("today"))
     marubozu_threshold = st.sidebar.number_input("Marubozu threshold (%)", min_value=0.0, max_value=5.0, value=0.2)
 
     # Candlestick pattern filter (optional)
